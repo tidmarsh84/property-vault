@@ -4,8 +4,8 @@
 
 HPI transformed trust in the used-car market by giving every vehicle a
 permanent history. Property Vault does the same for property: one secure,
-verified, continually growing record per building — planning, sales,
-extensions, surveys, certificates, maintenance, insurance — that **follows the
+verified, continually growing record per building, planning, sales,
+extensions, surveys, certificates, maintenance, insurance, that **follows the
 property, not the owner**. Owners come and go; the property remains, and its
 history keeps growing.
 
