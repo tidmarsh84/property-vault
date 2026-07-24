@@ -1,0 +1,214 @@
+// Property Vault — pilot schema
+// SQLite in dev; kept Postgres-compatible (no SQLite-only features).
+// Switch by setting DATABASE_URL and provider via env in deployment.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Organisation {
+  id         String     @id @default(cuid())
+  name       String
+  users      User[]
+  properties Property[]
+  createdAt  DateTime   @default(now())
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  name           String
+  passwordHash   String
+  role           String // "admin" | "staff"
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  organisationId String
+  uploads        DocumentVersion[]
+  createdAt      DateTime     @default(now())
+}
+
+model Property {
+  id                 String       @id @default(cuid())
+  recordId           String       @unique // PV-GB-{area}-{6 digits}
+  uprn               String?
+  uprnOverrideReason String? // required at service layer when uprn is null
+  addressLine1       String
+  addressLine2       String?
+  city               String
+  postcode           String
+  tenure             String // "freehold" | "leasehold" | "other"
+  propertyType       String
+  constructionYear   Int?
+  status             String       @default("draft") // "draft" | "issued"
+  issuedAt           DateTime?
+  organisation       Organisation @relation(fields: [organisationId], references: [id])
+  organisationId     String
+  assets             Asset[]
+  accessTokens       AccessToken[]
+  analyticsEvents    AnalyticsEvent[]
+  interestCaptures   InterestCapture[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model Asset {
+  id              String   @id @default(cuid())
+  property        Property @relation(fields: [propertyId], references: [id])
+  propertyId      String
+  name            String // "Rear extension", "Boiler", "Whole property"
+  kind            String // "structure" | "roof" | "heating" | "electrical" | "solar" | "whole_property" | "other"
+  isWholeProperty Boolean  @default(false)
+  events          Event[]
+  createdAt       DateTime @default(now())
+
+  @@index([propertyId])
+}
+
+model Event {
+  id                String   @id @default(cuid())
+  asset             Asset    @relation(fields: [assetId], references: [id])
+  assetId           String
+  title             String
+  lifecycle         String   @default("draft") // "draft" | "awaiting_evidence" | "issued" | "archived"
+  origin            String   @default("professional") // "professional" | "owner_provided"
+  templateKey       String?
+  startedOn         DateTime?
+  completedOn       DateTime?
+  periodLabel       String? // display label e.g. "February — July 2026"
+  summary           String? // one-line description under the title
+  historical        Boolean  @default(false) // e.g. 1962 construction — no verification level shown
+  verificationLevel Int      @default(0) // 0-100, cached; recomputed from rules on evidence change
+  sortDate          DateTime // drives newest-first timeline
+  stages            Stage[]
+  professionals     EventProfessional[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([assetId])
+}
+
+model EventProfessional {
+  id                 String  @id @default(cuid())
+  event              Event   @relation(fields: [eventId], references: [id])
+  eventId            String
+  role               String // "Structural Engineer"
+  firmName           String // "Paddick Engineering Ltd"
+  registrationBody   String?
+  registrationNumber String?
+  identityVerified   Boolean @default(false)
+  position           Int     @default(0)
+
+  @@index([eventId])
+}
+
+model Stage {
+  id         String    @id @default(cuid())
+  event      Event     @relation(fields: [eventId], references: [id])
+  eventId    String
+  typeKey    String // matches config/verification-rules.ts, e.g. "signed_off"
+  name       String
+  detail     String? // "Leeds City Council · Ref 26/00847/FU"
+  occurredOn DateTime?
+  status     String    @default("pending") // "pending" | "complete"
+  position   Int       @default(0)
+  documents  Document[]
+
+  @@index([eventId])
+}
+
+model Document {
+  id                  String    @id @default(cuid())
+  stage               Stage     @relation(fields: [stageId], references: [id])
+  stageId             String
+  title               String
+  issuingOrganisation String
+  issueDate           DateTime?
+  expiryDate          DateTime? // warranties, gas certs, EICRs — display only in pilot
+  issuerClass         String // "building_control" | "registered_professional" | "firm" | "owner_provided"
+  docType             String // "certificate" | "drawing" | "calculation" | "photo" | "invoice" | "report" | "other"
+  scopeClass          String // "certificate" | "structural" | "general" — drives share filtering
+  requirementKey      String? // which verification requirement this satisfies
+  versions            DocumentVersion[]
+  createdAt           DateTime  @default(now())
+
+  @@index([stageId])
+}
+
+// Append-only. No update/delete path exists at the service layer.
+model DocumentVersion {
+  id           String   @id @default(cuid())
+  document     Document @relation(fields: [documentId], references: [id])
+  documentId   String
+  versionNo    Int
+  storageKey   String
+  fileName     String
+  mimeType     String // "application/pdf" | "image/jpeg" | "image/png"
+  sizeBytes    Int
+  sha256       String // computed server-side at upload; immutable
+  sealedAt     DateTime @default(now())
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id])
+  uploadedById String?
+  isCurrent    Boolean  @default(true)
+  receipt      IntegrityReceipt?
+
+  @@unique([documentId, versionNo])
+  @@index([documentId])
+}
+
+// Append-only anchor receipts written by the IntegrityProvider.
+model IntegrityReceipt {
+  id                String          @id @default(cuid())
+  documentVersion   DocumentVersion @relation(fields: [documentVersionId], references: [id])
+  documentVersionId String          @unique
+  provider          String // "local" | "null"
+  receiptJson       String // signed { sha256, anchoredAt } payload
+  anchoredAt        DateTime        @default(now())
+}
+
+model AccessToken {
+  id            String    @id @default(cuid())
+  property      Property  @relation(fields: [propertyId], references: [id])
+  propertyId    String
+  tokenHash     String    @unique // SHA-256 hex of the raw 128-bit token
+  scope         String // "owner" | "solicitor" | "agent_buyer" | "insurer_surveyor"
+  label         String? // e.g. "Shared with solicitor, 20 Jul 2026"
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  createdVia    String // "issue_record" | "share_modal" | "seed"
+  parentTokenId String? // owner token that created this share
+  analyticsEvents AnalyticsEvent[]
+  createdAt     DateTime  @default(now())
+
+  @@index([propertyId])
+}
+
+model AnalyticsEvent {
+  id          String      @id @default(cuid())
+  property    Property    @relation(fields: [propertyId], references: [id])
+  propertyId  String
+  token       AccessToken? @relation(fields: [tokenId], references: [id])
+  tokenId     String?
+  kind        String // "record_opened" | "doc_viewed" | "doc_downloaded" | "download_all" | "share_created" | "share_opened" | "invite_interest"
+  documentId  String?
+  shareScope  String?
+  deviceType  String      @default("unknown") // "desktop" | "mobile" | "tablet" | "unknown"
+  countryCode String? // derived only; raw IP never stored
+  dayBucket   String // "YYYY-MM-DD" for distinct-day revisit counting
+  createdAt   DateTime    @default(now())
+
+  @@index([propertyId, kind])
+  @@index([propertyId, dayBucket])
+}
+
+model InterestCapture {
+  id         String   @id @default(cuid())
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId String
+  eventId    String?
+  note       String? // e.g. "invite installer clicked on boiler event"
+  createdAt  DateTime @default(now())
+}

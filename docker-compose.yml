@@ -1,0 +1,40 @@
+# Property Vault pilot — one-command deployment on any Docker host.
+#   docker compose up -d --build
+# Then seed once:
+#   docker compose exec app npx tsx prisma/seed.ts
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pv
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: propertyvault
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pv -d propertyvault"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://pv:${POSTGRES_PASSWORD:-change-me}@db:5432/propertyvault
+      INTEGRITY_SIGNING_KEY: ${INTEGRITY_SIGNING_KEY:?set in .env}
+      AUTH_SECRET: ${AUTH_SECRET:?set in .env}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
+      STORAGE_PROVIDER: local
+      STORAGE_DIR: /data/storage
+    volumes:
+      - storage:/data/storage
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
+  storage:

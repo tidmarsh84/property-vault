@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>14 Acacia Avenue — Property Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Brand board tokens — exact */
+    --navy:#0A1220;          /* Vault Navy */
+    --steel:#13233B;         /* Steel Blue */
+    --slate:#2B3645;         /* Slate */
+    --silver:#D5D9DF;        /* Silver */
+    --lightgrey:#F2F4F7;     /* Light Grey */
+    --gold:#C79B3D;          /* Gold */
+
+    --navy-2:#0D1729;
+    --panel:#101C31;
+    --panel-2:#152238;
+    --line:#1D2A42;
+    --line-soft:#26364F;
+    --text:#EDF0F5;
+    --text-soft:#C3CBD7;
+    --muted:#8592A6;
+    --gold-bright:#E0BE72;
+    --gold-soft:rgba(199,155,61,.13);
+    --gold-line:rgba(199,155,61,.4);
+    --amber:#CE8A3F;
+    --amber-soft:rgba(206,138,63,.14);
+    --radius:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--navy);color:var(--text);font-family:'Source Sans 3','Inter',system-ui,sans-serif;font-size:16.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .serif{font-family:'Playfair Display',Georgia,serif}
+  .ui{font-family:'Inter',system-ui,sans-serif}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+  /* ── header ─────────────────────────────── */
+  header{position:sticky;top:0;z-index:40;background:rgba(10,18,32,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .hwrap{max-width:1100px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;gap:26px}
+  .brand{display:flex;align-items:center;gap:11px;flex:none}
+  .pv-mark{width:33px;height:37px;flex:none}
+  .brand .name{font-family:'Inter',sans-serif;font-weight:500;letter-spacing:.18em;font-size:.68rem;text-transform:uppercase;line-height:1.3;color:var(--text-soft)}
+  .brand .name b{display:block;font-weight:700;letter-spacing:.26em;font-size:.9rem;color:#fff}
+  nav.tabs{display:flex;gap:2px;margin-left:auto}
+  .tab{font-family:'Inter',sans-serif;font-size:.83rem;font-weight:500;color:var(--muted);background:none;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;transition:color .15s,background .15s}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--gold-bright);background:var(--gold-soft)}
+  .btn{font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;cursor:pointer;border-radius:9px;padding:9px 16px;border:1px solid transparent;transition:background .15s,border-color .15s,transform .05s}
+  .btn:active{transform:translateY(1px)}
+  .btn-gold{background:var(--gold);color:#171203}
+  .btn-gold:hover{background:var(--gold-bright)}
+  .btn-ghost{background:transparent;color:var(--text-soft);border-color:var(--line-soft)}
+  .btn-ghost:hover{border-color:var(--gold-line);color:var(--gold-bright)}
+  .btn-block{width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+  button:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+  /* ── hero ───────────────────────────────── */
+  .hero{position:relative;padding:44px 24px 34px;border-bottom:1px solid var(--line);overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:-40% -20% auto;height:140%;background:
+    radial-gradient(46% 60% at 80% 15%,rgba(199,155,61,.13),transparent 70%),
+    radial-gradient(42% 55% at 10% 0%,rgba(19,35,59,.95),transparent 72%);pointer-events:none}
+  .hero-in{position:relative;max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;gap:34px;align-items:flex-end;flex-wrap:wrap}
+  .eyebrow{font-family:'Inter',sans-serif;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--gold-line)}
+  h1{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(1.9rem,4.2vw,2.9rem);line-height:1.12;letter-spacing:.005em}
+  .idline{font-size:.84rem;color:var(--muted);margin-top:10px}
+  .idline .mono{color:var(--text-soft);font-size:.82rem}
+  .idline .sep{margin:0 8px;color:var(--slate)}
+
+  /* verification block — per the board's product shot */
+  .seal{text-align:right;flex:none}
+  .seal .k{font-family:'Inter',sans-serif;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .seal .pct{font-family:'Playfair Display',serif;font-size:2.9rem;line-height:1.05;color:var(--gold);margin:2px 0}
+  .seal .band{display:inline-flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-bright)}
+  .seal .band svg{flex:none}
+
+  /* ── layout: summary + timeline ─────────── */
+  main{max-width:1100px;margin:0 auto;padding:36px 24px 90px;display:grid;grid-template-columns:264px 1fr;gap:34px;align-items:start}
+  .sidebar{position:sticky;top:78px}
+  .sum-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .sum-card .sc-h{font-family:'Inter',sans-serif;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:14px 18px 10px;border-bottom:1px solid var(--line)}
+  .sum-row{padding:11px 18px;border-bottom:1px solid var(--line)}
+  .sum-row:last-of-type{border-bottom:none}
+  .sum-row .k{font-family:'Inter',sans-serif;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .sum-row .v{margin-top:2px;font-size:.9rem;color:var(--text-soft);font-weight:500}
+  .sum-row .v.mono{font-size:.8rem;color:var(--gold-bright);font-weight:400}
+  .sum-foot{padding:14px 18px;border-top:1px solid var(--line);background:var(--navy-2)}
+  .integrity-mini{margin-top:14px;background:linear-gradient(135deg,rgba(199,155,61,.1),rgba(199,155,61,.03));border:1px solid var(--gold-line);border-radius:var(--radius);padding:13px 15px;font-size:.78rem;color:var(--text-soft);display:flex;gap:9px;align-items:flex-start}
+  .integrity-mini svg{flex:none;margin-top:2px}
+
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:4px}
+  h2{font-family:'Playfair Display',serif;font-weight:500;font-size:1.6rem;color:var(--text)}
+  .section-note{font-family:'Inter',sans-serif;color:var(--muted);font-size:.82rem}
+  .lede{color:var(--muted);max-width:66ch;margin-bottom:30px;font-size:.93rem}
+
+  /* ── timeline ───────────────────────────── */
+  .timeline{position:relative;margin-left:10px}
+  .timeline::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--gold-line),var(--line) 70%)}
+  .event{position:relative;padding:0 0 40px 44px}
+  .event:last-child{padding-bottom:0}
+  .node{position:absolute;left:0;top:3px;width:19px;height:19px;border-radius:50%;background:var(--navy);border:1.5px solid var(--muted)}
+  .event.verified .node{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 4px rgba(199,155,61,.15)}
+  .event.verified .node::after{content:"";position:absolute;inset:0;margin:auto;width:8px;height:4px;border-left:2px solid #10131C;border-bottom:2px solid #10131C;transform:rotate(-45deg) translate(0,-1px)}
+  .event.partial .node{background:var(--amber-soft);border-color:var(--amber)}
+  .event .when{font-family:'Inter',sans-serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  .ev-title-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:4px 0 2px}
+  .event h3{font-family:'Playfair Display',serif;font-weight:500;font-size:1.28rem;color:var(--text)}
+  .event .who{font-size:.86rem;color:var(--muted)}
+
+  .conf{font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:7px;font-size:.74rem;font-weight:600;letter-spacing:.04em;padding:4px 12px;border-radius:99px;border:1px solid transparent}
+  .conf .dot{width:7px;height:7px;border-radius:50%}
+  .conf.high{background:var(--gold-soft);color:var(--gold-bright);border-color:var(--gold-line)}
+  .conf.high .dot{background:var(--gold)}
+  .conf.mid{background:var(--amber-soft);color:var(--amber);border-color:rgba(206,138,63,.4)}
+  .conf.mid .dot{background:var(--amber)}
+  .conf.low{background:#172136;color:var(--muted);border-color:var(--line-soft)}
+  .conf.low .dot{background:var(--muted)}
+
+  .parties{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .party{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:.79rem}
+  .party .role{color:var(--muted)}
+  .party .firm{color:var(--text-soft);font-weight:600}
+  .party .tick{width:14px;height:14px;flex:none}
+
+  /* ── stage chain ────────────────────────── */
+  .stages{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);margin-top:16px;overflow:hidden}
+  .stage{border-bottom:1px solid var(--line)}
+  .stage:last-child{border-bottom:none}
+  .stage summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:26px 1fr auto;gap:14px;align-items:center;padding:14px 18px;transition:background .12s}
+  .stage summary::-webkit-details-marker{display:none}
+  .stage summary:hover{background:#152238}
+  .st-mark{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none}
+  .st-mark.done{background:var(--gold)}
+  .st-mark.done::after{content:"";width:9px;height:5px;border-left:2px solid #10131C;border-bottom:2px solid #10131C;transform:rotate(-45deg) translateY(-1px)}
+  .st-main .sn{font-weight:600;font-size:.92rem;color:var(--text)}
+  .st-main .sm{font-size:.79rem;color:var(--muted);margin-top:1px}
+  .st-count{font-family:'Inter',sans-serif;font-size:.76rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .st-count .chev{transition:transform .15s;color:var(--gold)}
+  .stage[open] .st-count .chev{transform:rotate(90deg)}
+
+  .evidence{background:var(--navy-2);border-top:1px solid var(--line);padding:6px 18px 14px 58px}
+  .ev-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line-soft)}
+  .ev-row:last-child{border-bottom:none}
+  .ev-name{font-size:.86rem;color:var(--text-soft)}
+  .ev-meta{font-size:.75rem;color:var(--muted)}
+  .ev-actions{display:flex;gap:4px;flex:none}
+  .link-btn{background:none;border:none;font-family:'Inter',sans-serif;font-size:.79rem;font-weight:600;color:var(--gold-bright);cursor:pointer;padding:5px 9px;border-radius:6px}
+  .link-btn:hover{background:var(--gold-soft)}
+  .ev-missing{font-size:.83rem;color:var(--amber);padding:10px 0 2px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+
+  .verify-detail{background:var(--panel);border:1px solid var(--gold-line);border-radius:9px;padding:13px 15px;font-size:.79rem;margin:8px 0 4px;display:none}
+  .verify-detail.show{display:block}
+  .vp-ok{display:flex;align-items:center;gap:8px;color:var(--gold-bright);font-weight:600;margin-bottom:8px}
+  .vp-row{display:flex;gap:10px;padding:2px 0;flex-wrap:wrap}
+  .vp-row .k{width:105px;flex:none;color:var(--muted)}
+  .vp-row .v{color:var(--text-soft)}
+  .vp-row .v.mono{font-size:.72rem;word-break:break-all;color:var(--gold-bright)}
+
+  .conf-panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);margin-top:14px;padding:16px 18px;font-size:.86rem}
+  .conf-panel .cp-t{font-weight:600;color:var(--text);margin-bottom:3px}
+  .conf-panel .cp-note{font-size:.77rem;color:var(--muted);margin-bottom:10px}
+  .cp-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line-soft);color:var(--text-soft)}
+  .cp-row:last-of-type{border-bottom:none}
+  .cp-row .yes{color:var(--gold-bright);font-weight:600}
+  .cp-row .no{color:var(--amber);font-weight:600}
+
+  /* ── share modal ────────────────────────── */
+  .overlay{position:fixed;inset:0;background:rgba(4,8,16,.72);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+  .overlay.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line-soft);border-radius:15px;max-width:490px;width:100%;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .modal h3{font-family:'Playfair Display',serif;font-weight:500;font-size:1.4rem;color:var(--text);margin-bottom:4px}
+  .modal .m-sub{color:var(--muted);font-size:.87rem;margin-bottom:18px}
+  .opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line-soft);border-radius:10px;padding:13px 14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,background .15s}
+  .opt:hover{border-color:var(--gold-line)}
+  .opt.sel{border-color:var(--gold);background:var(--gold-soft)}
+  .opt input{margin-top:4px;accent-color:var(--gold)}
+  .opt .ot{font-weight:600;font-size:.91rem;color:var(--text)}
+  .opt .od{font-size:.79rem;color:var(--muted)}
+  .share-out{display:none;margin-top:14px;background:var(--navy-2);border:1px solid var(--gold-line);border-radius:9px;padding:12px 14px}
+  .share-out.show{display:block}
+  .share-out .lbl{font-family:'Inter',sans-serif;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+  .share-out .url{font-size:.77rem;word-break:break-all;color:var(--text-soft)}
+  .m-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+
+  footer{border-top:1px solid var(--line);background:var(--navy-2)}
+  .fwrap{max-width:1100px;margin:0 auto;padding:26px 24px;font-size:.79rem;color:var(--muted);display:flex;flex-direction:column;gap:10px}
+  .fwrap .anchor{display:flex;gap:9px;align-items:flex-start}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--gold);color:#171203;padding:11px 18px;border-radius:9px;font-size:.86rem;font-weight:600;font-family:'Inter',sans-serif;opacity:0;pointer-events:none;transition:.25s;z-index:70;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:860px){
+    .hwrap{padding:12px 16px;gap:12px}
+    nav.tabs{display:none}
+    .hero{padding:34px 16px 28px}
+    .seal{text-align:left}
+    main{grid-template-columns:1fr;padding:30px 16px 64px;gap:24px}
+    .sidebar{position:static}
+    .evidence{padding-left:18px}
+    .stage summary{grid-template-columns:26px 1fr;row-gap:4px}
+    .st-count{grid-column:2}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <div class="brand">
+      <svg class="pv-mark" viewBox="0 0 34 38" fill="none" aria-hidden="true">
+        <path d="M17 1.5l14.5 5.4v10.4c0 9.3-6.1 16.4-14.5 19.2C8.6 33.7 2.5 26.6 2.5 17.3V6.9L17 1.5z" stroke="#C79B3D" stroke-width="1.6"/>
+        <text x="17" y="23.5" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" fill="#C79B3D" font-weight="600">PV</text>
+      </svg>
+      <span class="name">Property<b>Vault</b></span>
+    </div>
+    <nav class="tabs" aria-label="Record sections">
+      <button class="tab active" onclick="setTabScroll(0,'top')">Overview</button>
+      <button class="tab" onclick="setTabScroll(1,'timeline')">Timeline</button>
+      <button class="tab" onclick="setTabScroll(2,'timeline')">Documents</button>
+      <button class="tab" onclick="setTabScroll(3,'parties')">Parties</button>
+      <button class="tab" onclick="openShare()">Share</button>
+      <button class="tab" onclick="toast('Prototype: the Activity view lives in the pilot dashboard.')">Activity</button>
+    </nav>
+    <button class="btn btn-gold" style="margin-left:auto" onclick="openShare()">Share this record</button>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-in">
+    <div>
+      <div class="eyebrow">Permanent record · Freehold · Leeds LS17</div>
+      <h1 class="serif">14 Acacia Avenue, Leeds</h1>
+      <div class="idline">
+        Record ID: <span class="mono">PV-GB-LDS-004512</span>
+        <span class="sep">·</span> UPRN: <span class="mono">100012345678</span>
+      </div>
+    </div>
+    <div class="seal" role="group" aria-label="Record verification level">
+      <div class="k">Verification level</div>
+      <div class="pct serif">86%</div>
+      <div class="band">
+        <svg width="13" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l5 2v3.6c0 3.2-2.1 5.7-5 7.4-2.9-1.7-5-4.2-5-7.4V3.5l5-2z" stroke="#E0BE72" stroke-width="1.4"/><path d="M5.6 8l1.7 1.7L10.6 6.3" stroke="#E0BE72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        High
+      </div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <aside class="sidebar">
+    <div class="sum-card">
+      <div class="sc-h">Property summary</div>
+      <div class="sum-row"><div class="k">Property type</div><div class="v">Residential (semi-detached)</div></div>
+      <div class="sum-row"><div class="k">Tenure</div><div class="v">Freehold</div></div>
+      <div class="sum-row"><div class="k">UPRN</div><div class="v mono">100012345678</div></div>
+      <div class="sum-row"><div class="k">Verified events</div><div class="v">3 of 5 · 9 sealed documents</div></div>
+      <div class="sum-row"><div class="k">Record created</div><div class="v">2 Feb 2026</div></div>
+      <div class="sum-row"><div class="k">Last updated</div><div class="v">14 Jul 2026</div></div>
+      <div class="sum-foot">
+        <button class="btn btn-ghost btn-block" onclick="toast('Prototype: downloads a ZIP of the record and its sealed documents.')">
+          Download summary
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v8m0 0L4 6.2M7 9l3-2.8M2 12.5h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="integrity-mini">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M8 1.5l5 2v3.6c0 3.2-2.1 5.7-5 7.4-2.9-1.7-5-4.2-5-7.4V3.5l5-2z" stroke="#C79B3D" stroke-width="1.4" fill="rgba(199,155,61,.12)"/>
+        <path d="M5.6 8l1.7 1.7L10.6 6.3" stroke="#C79B3D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>Verified events are digitally signed by identity-checked professionals at the time of the work, then sealed so they cannot be altered afterwards — by anyone, including us. Verified refers to the record, never the quality of the work.</div>
+    </div>
+  </aside>
+
+  <div id="timeline">
+    <div class="section-head">
+      <h2>Event timeline</h2>
+      <span class="section-note">Newest first</span>
+    </div>
+    <p class="lede">Each entry is an event, not a folder. Open an event to see its stages; open a stage to see the evidence behind it.</p>
+
+    <div class="timeline">
+
+      <!-- 2026 extension: the hero event -->
+      <div class="event verified" id="parties">
+        <span class="node" aria-hidden="true"></span>
+        <div class="when">February — July 2026</div>
+        <div class="ev-title-row">
+          <h3>Single-storey rear extension</h3>
+          <span class="conf high"><span class="dot"></span>100% verified</span>
+        </div>
+        <div class="parties" aria-label="Contributing professionals">
+          <span class="party"><svg class="tick" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#C79B3D"/><path d="M5 8.2l2 2L11.2 6" stroke="#10131C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="role">Structural Engineer</span><span class="firm">Paddick Engineering Ltd</span></span>
+          <span class="party"><svg class="tick" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#C79B3D"/><path d="M5 8.2l2 2L11.2 6" stroke="#10131C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="role">Builder</span><span class="firm">R. Hartley Builders</span></span>
+          <span class="party"><svg class="tick" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#C79B3D"/><path d="M5 8.2l2 2L11.2 6" stroke="#10131C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="role">Building Control</span><span class="firm">Leeds City Council</span></span>
+        </div>
+
+        <div class="stages">
+
+          <details class="stage" open>
+            <summary>
+              <span class="st-mark done" aria-hidden="true"></span>
+              <span class="st-main">
+                <span class="sn">Planning permission granted</span><br>
+                <span class="sm">Leeds City Council · Ref 26/00847/FU · 2 Feb 2026</span>
+              </span>
+              <span class="st-count">2 documents <span class="chev">›</span></span>
+            </summary>
+            <div class="evidence">
+              <div class="ev-row">
+                <div><div class="ev-name">Decision notice</div><div class="ev-meta">Sealed 2 Feb 2026 · 0.4 MB</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the sealed PDF.')">View</button><button class="link-btn" onclick="toggleVerify('v1')">Verify</button></div>
+              </div>
+              <div class="verify-detail" id="v1">
+                <div class="vp-ok"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#C79B3D"/><path d="M5 8.2l2 2L11.2 6" stroke="#10131C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Unaltered since issue</div>
+                <div class="vp-row"><span class="k">Issued by</span><span class="v">Leeds City Council (identity checked)</span></div>
+                <div class="vp-row"><span class="k">Sealed</span><span class="v">2 Feb 2026, 09:17 GMT</span></div>
+                <div class="vp-row"><span class="k">Fingerprint</span><span class="v mono">a4c19e7f2b8d…e5f3a7b1</span></div>
+                <div class="vp-row"><span class="k">Anchored</span><span class="v">Public ledger — independently checkable</span></div>
+              </div>
+              <div class="ev-row">
+                <div><div class="ev-name">Approved drawings (4 sheets)</div><div class="ev-meta">Sealed 2 Feb 2026 · 6.2 MB</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the sealed drawings.')">View</button><button class="link-btn" onclick="toast('Verification shown as above.')">Verify</button></div>
+              </div>
+            </div>
+          </details>
+
+          <details class="stage">
+            <summary>
+              <span class="st-mark done" aria-hidden="true"></span>
+              <span class="st-main">
+                <span class="sn">Structural design completed</span><br>
+                <span class="sm">Paddick Engineering Ltd · J. Kamau CEng MICE · 9 Mar 2026</span>
+              </span>
+              <span class="st-count">3 documents <span class="chev">›</span></span>
+            </summary>
+            <div class="evidence">
+              <div class="ev-row">
+                <div><div class="ev-name">Steel beam &amp; padstone calculations</div><div class="ev-meta">Sealed 9 Mar 2026 · 4.8 MB</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the sealed PDF.')">View</button><button class="link-btn" onclick="toggleVerify('v2')">Verify</button></div>
+              </div>
+              <div class="verify-detail" id="v2">
+                <div class="vp-ok"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="#C79B3D"/><path d="M5 8.2l2 2L11.2 6" stroke="#10131C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Unaltered since issue</div>
+                <div class="vp-row"><span class="k">Issued by</span><span class="v">Paddick Engineering Ltd (Chartered engineer, PI insurance verified)</span></div>
+                <div class="vp-row"><span class="k">Sealed</span><span class="v">9 Mar 2026, 11:02 GMT</span></div>
+                <div class="vp-row"><span class="k">Fingerprint</span><span class="v mono">3f1c8b7a2d94…a6c0b5d8</span></div>
+                <div class="vp-row"><span class="k">Anchored</span><span class="v">Public ledger — independently checkable</span></div>
+              </div>
+              <div class="ev-row">
+                <div><div class="ev-name">Building Regulations drawing package (6 sheets)</div><div class="ev-meta">Sealed 9 Mar 2026 · 11.4 MB</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the sealed drawings.')">View</button><button class="link-btn" onclick="toast('Verification shown as above.')">Verify</button></div>
+              </div>
+              <div class="ev-row">
+                <div><div class="ev-name">Drainage &amp; SuDS design</div><div class="ev-meta">Sealed 9 Mar 2026 · 2.2 MB</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the sealed PDF.')">View</button><button class="link-btn" onclick="toast('Verification shown as above.')">Verify</button></div>
+              </div>
+            </div>
+          </details>
+
+          <details class="stage">
+            <summary>
+              <span class="st-mark done" aria-hidden="true"></span>
+              <span class="st-main">
+                <span class="sn">Built &amp; inspected</span><br>
+                <span class="sm">R. Hartley Builders · Site inspections passed · Mar — Jul 2026</span>
+              </span>
+              <span class="st-count">2 items <span class="chev">›</span></span>
+            </summary>
+            <div class="evidence">
+              <div class="ev-row">
+                <div><div class="ev-name">Completion photographs (24 images)</div><div class="ev-meta">Uploaded by R. Hartley Builders · 12 Jul 2026</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the photo gallery.')">View</button><button class="link-btn" onclick="toast('Verification shown as above.')">Verify</button></div>
+              </div>
+              <div class="ev-row">
+                <div><div class="ev-name">Electrical installation certificate (BS 7671)</div><div class="ev-meta">Yorks Electrical Ltd · NICEIC registered · 8 Jul 2026</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the sealed PDF.')">View</button><button class="link-btn" onclick="toast('Verification shown as above.')">Verify</button></div>
+              </div>
+            </div>
+          </details>
+
+          <details class="stage">
+            <summary>
+              <span class="st-mark done" aria-hidden="true"></span>
+              <span class="st-main">
+                <span class="sn">Signed off — completion certificate issued</span><br>
+                <span class="sm">Leeds City Council Building Control · 14 Jul 2026</span>
+              </span>
+              <span class="st-count">1 document <span class="chev">›</span></span>
+            </summary>
+            <div class="evidence">
+              <div class="ev-row">
+                <div><div class="ev-name">Building Regulations completion certificate</div><div class="ev-meta">Sealed 14 Jul 2026 · 1.2 MB</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the sealed PDF.')">View</button><button class="link-btn" onclick="toast('Verification shown as above.')">Verify</button></div>
+              </div>
+            </div>
+          </details>
+
+          <details class="stage">
+            <summary>
+              <span class="st-mark done" aria-hidden="true"></span>
+              <span class="st-main">
+                <span class="sn">Warranty active</span><br>
+                <span class="sm">10-year structural warranty · Expires 14 Jul 2036</span>
+              </span>
+              <span class="st-count">1 document <span class="chev">›</span></span>
+            </summary>
+            <div class="evidence">
+              <div class="ev-row">
+                <div><div class="ev-name">Structural warranty certificate</div><div class="ev-meta">Sealed 14 Jul 2026 · 0.4 MB</div></div>
+                <div class="ev-actions"><button class="link-btn" onclick="toast('Prototype: opens the sealed PDF.')">View</button><button class="link-btn" onclick="toast('Verification shown as above.')">Verify</button></div>
+              </div>
+            </div>
+          </details>
+
+        </div>
+      </div>
+
+      <!-- rewire -->
+      <div class="event verified">
+        <span class="node" aria-hidden="true"></span>
+        <div class="when">September 2021</div>
+        <div class="ev-title-row">
+          <h3>Full electrical rewire</h3>
+          <span class="conf high"><span class="dot"></span>100% verified</span>
+        </div>
+        <div class="who">Yorks Electrical Ltd · NICEIC registered · Installation certificate on record</div>
+      </div>
+
+      <!-- boiler: partial verification, the deliberate gap -->
+      <div class="event partial">
+        <span class="node" aria-hidden="true"></span>
+        <div class="when">June 2018</div>
+        <div class="ev-title-row">
+          <h3>Gas boiler replaced</h3>
+          <span class="conf mid"><span class="dot"></span>62% verification level</span>
+        </div>
+        <div class="who">Worcester Bosch Greenstar · Evidence uploaded by owner</div>
+
+        <div class="conf-panel">
+          <div class="cp-t">Why 62%?</div>
+          <div class="cp-note">Verification reflects what is evidenced and identity-checked — not the quality of the installation.</div>
+          <div class="cp-row"><span>Benchmark certificate uploaded</span><span class="yes">✓ On record</span></div>
+          <div class="cp-row"><span>Installer identity</span><span class="no">Not verified</span></div>
+          <div class="cp-row"><span>Gas Safe registration at date of work</span><span class="no">Not confirmed</span></div>
+          <div class="cp-row"><span>Building Regulations notification</span><span class="no">Not found</span></div>
+          <div class="ev-missing" style="margin-top:8px">
+            <span>Know who installed this boiler? Inviting them to verify raises this event's verification level.</span>
+            <button class="btn btn-ghost" onclick="toast('Prototype: sends a verification invitation to the installer.')">Invite installer</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- roof -->
+      <div class="event partial">
+        <span class="node" aria-hidden="true"></span>
+        <div class="when">March 2011</div>
+        <div class="ev-title-row">
+          <h3>Roof re-covered</h3>
+          <span class="conf mid"><span class="dot"></span>48% verification level</span>
+        </div>
+        <div class="who">Invoice and photographs uploaded by owner · Contractor not verified</div>
+      </div>
+
+      <!-- built -->
+      <div class="event">
+        <span class="node" aria-hidden="true"></span>
+        <div class="when">1962</div>
+        <div class="ev-title-row">
+          <h3>Property constructed</h3>
+          <span class="conf low"><span class="dot"></span>Historical</span>
+        </div>
+        <div class="who">Semi-detached, cavity wall construction · Source: HM Land Registry title</div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="fwrap">
+    <div class="anchor">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="flex:none;margin-top:2px" aria-hidden="true">
+        <path d="M8 1.5l5 2v3.6c0 3.2-2.1 5.7-5 7.4-2.9-1.7-5-4.2-5-7.4V3.5l5-2z" stroke="#C79B3D" stroke-width="1.3"/>
+      </svg>
+      <span>Each sealed document is fingerprinted and anchored to a public ledger at the moment of issue, providing independent, long-term proof that it has not changed. Documents are held in secure UK cloud storage and never published.</span>
+    </div>
+    <span>Property Vault — prototype v3 (enterprise design). Record PV-GB-LDS-004512 · All names, dates and documents are illustrative.</span>
+  </div>
+</footer>
+
+<div class="overlay" id="shareOverlay" role="dialog" aria-modal="true" aria-labelledby="shareTitle" onclick="if(event.target===this)closeShare()">
+  <div class="modal">
+    <h3 id="shareTitle" class="serif">Share this record</h3>
+    <p class="m-sub">Create a secure, read-only link. You can withdraw access at any time.</p>
+    <label class="opt sel" onclick="selectOpt(this)">
+      <input type="radio" name="scope" checked>
+      <span><span class="ot">Solicitor or conveyancer</span><br><span class="od">Full record — every event, stage and sealed document with verification details.</span></span>
+    </label>
+    <label class="opt" onclick="selectOpt(this)">
+      <input type="radio" name="scope">
+      <span><span class="ot">Estate agent or buyer</span><br><span class="od">Event timeline, verification levels and certificates — working drawings stay private.</span></span>
+    </label>
+    <label class="opt" onclick="selectOpt(this)">
+      <input type="radio" name="scope">
+      <span><span class="ot">Insurer or surveyor</span><br><span class="od">Structural events, surveys and photographs relevant to condition.</span></span>
+    </label>
+    <div class="share-out" id="shareOut">
+      <div class="lbl">Secure link — valid 90 days</div>
+      <div class="url mono">https://propertyvault.co.uk/r/PV-GB-LDS-004512?k=s8Qx…4Fn2</div>
+    </div>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeShare()">Close</button>
+      <button class="btn btn-gold" onclick="makeLink()">Create secure link</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  function toggleVerify(id){document.getElementById(id).classList.toggle('show')}
+  function openShare(){document.getElementById('shareOverlay').classList.add('open')}
+  function closeShare(){
+    document.getElementById('shareOverlay').classList.remove('open');
+    document.getElementById('shareOut').classList.remove('show');
+  }
+  function selectOpt(el){
+    document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+    el.classList.add('sel');
+    el.querySelector('input').checked=true;
+    document.getElementById('shareOut').classList.remove('show');
+  }
+  function makeLink(){
+    document.getElementById('shareOut').classList.add('show');
+    toast('Secure link created — in the live product this is copied to your clipboard.');
+  }
+  function setTabScroll(i,anchor){
+    document.querySelectorAll('.tab').forEach((t,x)=>t.classList.toggle('active',x===i));
+    if(anchor==='top'){window.scrollTo({top:0})}
+    else{document.getElementById(anchor).scrollIntoView()}
+  }
+  let toastTimer;
+  function toast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg;t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+  }
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeShare()});
+</script>
+
+</body>
+</html>

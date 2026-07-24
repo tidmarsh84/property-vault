@@ -1,0 +1,45 @@
+{
+  "name": "property-vault",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:migrate": "node scripts/apply-migrations.mjs",
+    "db:seed": "tsx --env-file=.env prisma/seed.ts",
+    "db:generate": "PRISMA_SCHEMA_ENGINE_BINARY=/bin/true prisma generate",
+    "test": "vitest run",
+    "db:migrate:pg": "node scripts/apply-migrations-pg.mjs",
+    "db:use-postgres": "node scripts/set-db-provider.mjs postgresql",
+    "db:use-sqlite": "node scripts/set-db-provider.mjs sqlite"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.11.1",
+    "fflate": "^0.8.3",
+    "next": "14.2.35",
+    "pg": "^8.22.0",
+    "prisma": "^7.8.0",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@prisma/schema-engine-wasm": "^7.8.0-6.3c6e192761c0362d496ed980de936e2f3cebcd3a",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.23.1",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
+  }
+}
